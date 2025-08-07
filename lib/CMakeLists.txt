@@ -175,32 +175,33 @@ else()
   set(_install_targets ${libname})
 endif()
 
-install(TARGETS ${_install_targets}
-    EXPORT libconfigTargets
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
+if(LIBCONFIG_INSTALL)
+	install(TARGETS ${_install_targets}
+		EXPORT libconfigTargets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	)
+endif()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file("libconfigConfigVersion.cmake"
     VERSION ${PACKAGE_VERSION}
     COMPATIBILITY SameMajorVersion
     )
+if(LIBCONFIG_INSTALL)
+	install(EXPORT libconfigTargets
+		FILE "libconfigConfig.cmake"
+		NAMESPACE libconfig::
+		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libconfig
+		)
 
-install(EXPORT libconfigTargets
-    FILE "libconfigConfig.cmake"
-    NAMESPACE libconfig::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libconfig
-    )
-
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/libconfigConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/libconfig"
-    )
-
+	install(FILES
+		"${CMAKE_CURRENT_BINARY_DIR}/libconfigConfigVersion.cmake"
+		DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/libconfig"
+		)
+endif()
 if (UNIX)
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/libconfig.pc.cmake.in
@@ -212,14 +213,16 @@ if (UNIX)
           ${CMAKE_CURRENT_BINARY_DIR}/libconfig++.pc @ONLY
           )
     endif()
-    install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/libconfig.pc
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-        )
-    if(BUILD_CXX)
-      install(FILES
-          ${CMAKE_CURRENT_BINARY_DIR}/libconfig++.pc
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-          )
-    endif()
+	if(LIBCONFIG_INSTALL)
+		install(FILES
+			${CMAKE_CURRENT_BINARY_DIR}/libconfig.pc
+			DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+			)
+		if(BUILD_CXX)
+		  install(FILES
+			  ${CMAKE_CURRENT_BINARY_DIR}/libconfig++.pc
+			  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+			  )
+		endif()
+	endif()
 endif (UNIX)

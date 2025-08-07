@@ -18,6 +18,8 @@ option(BUILD_TESTS "Enable tests" ON)
 option(BUILD_FUZZERS "Enable fuzzers" OFF)
 option(BUILD_CXX "Build the C++ library in addition to the C library" ON)
 
+option(LIBCONFIG_INSTALL "Install applications and libraries" OFF)
+
 if(BUILD_CXX)
 	enable_language(CXX)
 endif()
