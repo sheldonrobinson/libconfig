@@ -7,8 +7,13 @@ file(STRINGS "configure.ac"
 string(REGEX REPLACE ${VERSION_REGEX} "\\1" VERSION_STRING "${VERSION_STRING}")
 
 project(libconfig LANGUAGES C VERSION ${VERSION_STRING})
+
+include(CMakeDependentOption)
+option(LIBCONFIG_BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
 option(BUILD_EXAMPLES "Enable examples" ON)
-option(BUILD_SHARED_LIBS  "Enable shared library" ON)
+# option(BUILD_SHARED_LIBS  "Enable shared library" ON)
+cmake_dependent_option(BUILD_SHARED_LIBS "Enable shared library" ON LIBCONFIG_BUILD_SHARED_LIBS OFF)
 option(BUILD_TESTS "Enable tests" ON)
 option(BUILD_FUZZERS "Enable fuzzers" OFF)
 option(BUILD_CXX "Build the C++ library in addition to the C library" ON)
